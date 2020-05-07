@@ -251,10 +251,11 @@ stdenv.mkDerivation {
                       <h3 id="mkDerivation.shellHook"><code class="literal" >shellHook</code></h3>
                       <p><i>string, optional</i></p>
                       <p>
-                          A shell script to run before entering a <code class="literal">nix-shell</code>.
+                          A shell script to run after entering a <code class="literal">nix-shell</code>.
                       </p>
                       <p>
-                          If <code class="literal">shellHook</code> is defined, it will be evaluated after
+                          If <code class="literal">shellHook</code> is defined, it will be run in the `nix-shell`
+                          after
                           <code class="literal">$stdenv/setup</code> has been sourced by the package's
                           <a href="#mkDerivation.builder">builder</a>.
                       </p>
