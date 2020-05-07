@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <title>derivation - nixpkgs</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <script type="text/javascript" src="Nixpkgs%20manual_files/jquery.js"></script>
+  <script type="text/javascript" src="Nixpkgs%20manual_files/jquery-ui.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script type="text/javascript" src="Nixpkgs%20manual_files/bootstrap.js"></script>
+  <style class="anchorjs"></style><link rel="stylesheet" href="Nixpkgs%20manual_files/bootstrap.css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/bootstrap-responsive.css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/nixos-site.css" type="text/css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/font-awesome.css">
+
+  <link rel="shortcut icon" type="image/png" href="https://nixos.org/favicon.png">
+
+  <meta name="google-site-verification" content="ir-07nYvo3u3x_VmkTO1wCfYJ8uC-SrVBGR7hZgqPSE">
+
+</head>
+
+<body>
+
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <li class="dropdown brand">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+            <img src="Nixpkgs%20manual_files/nix-wiki.png" alt="NixOS" class="logo">            Nixpkgs            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+                        <li><a href="https://nixos.org/">Site Home</a></li>
+            <li><a href="https://nixos.org/nixos">NixOS</a></li>
+            <li><a href="https://nixos.org/nix">Nix</a></li>
+            <li><a href="https://nixos.org/nixpkgs">Nixpkgs</a></li>
+          </ul>
+        </li>
+
+        <div class="nav-collapse collapse">              <ul class="nav pull-left">
+                <li><a href="https://nixos.org/download.html">Download</a></li>
+                <li><a href="https://nixos.org/learn.html">Learn</a></li>
+                <li><a href="https://nixos.org/governance.html">Governance</a></li>
+                <li><a href="https://nixos.org/donate.html">Donate</a></li>
+              </ul>
+              <ul class="nav pull-right">
+                <li><a href="https://github.com/NixOS/nixpkgs"><i class="fa fa-github"></i></a></li>
+                  </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container main">
+      <script xmlns="http://www.w3.org/1999/xhtml" src="Nixpkgs%20manual_files/highlight.js" type="text/javascript" xml:space="preserve"></script>
+      <script xmlns="http://www.w3.org/1999/xhtml" src="Nixpkgs%20manual_files/loader.js" type="text/javascript" xml:space="preserve"></script>
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="Nixpkgs%20manual_files/overrides.css">
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="Nixpkgs%20manual_files/mono-blue.css">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="docbook">
+
+          <section class="chapter">
+              <section class="section">
+                  <div class="titlepage">
+                      <div>
+                          <h2 class="title" style="clear: both">
+                              <code class="literal">derivation</code>
+                          </h2>
+                      </div>
+                      <p>
+                          <code class="varname">derivation</code> is a built-in function for creating derivations.
+                      </p>
+                      <h3>Inputs</h3>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+{
+  <a href="#derivation.name">name</a>:            string,
+  <a href="#derivation.system">system</a>:          string,
+  <a href="#derivation.builder">builder</a>:         path | derivation,
+  <a href="#derivation.args">args</a>:            list[toString]?,
+  <a href="#derivation.outputs">outputs</a>:         list[string]?
+  <a href="#derivation.user-defined-attributes">user-defined attributes</a>
+}</pre>
+                      <p>
+                          <code class="literal">toString = string | number | path | derivation | bool | null | list[toString]</code>
+                      </p>
+                      <br />
+
+                      <h3 id="derivation.name"><code class="literal" >name</code></h3>
+                      <p><i>string, required</i></p>
+                      <p>The derivation name.</p>
+                      <p>
+                          A name must be a non-empty string consisting only of alphanumeric characters and the symbols
+                          <code class="literal">+-._?=</code>. Names must not begin with a period.
+                      </p>
+                      <br />
+
+                      <h3 id="derivation.system"><code class="literal" >system</code></h3>
+                      <p><i>string, required</i></p>
+                      <p>A platform identifier.</p>
+                      <p>
+                          Resulting derivation can only by built on a machine with a matching platform identifier.
+                          Platform identifiers should be specified in
+                          <a href="https://clang.llvm.org/docs/CrossCompilation.html">Clang target-triple format</a>.
+                      </p>
+                      <p>Valid platform identifiers include:</p>
+                      <ul>
+                          <li><code class="literal">i386-linux</code></li>
+                          <li><code class="literal">x86_64-darwin</code></li>
+                          <li><code class="literal">armv7-linux-androideabi</code></li>
+                      </ul>
+                      <p>The current platform identifier can be retrieved using
+                          <a href="https://nixos.org/nix/manual/#ssec-builtins">
+                              <code class="literal">builtins.currentSystem</code></a>.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "hello";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+}</pre>
+                      <br />
+
+                      <h3 id="derivation.builder"><code class="literal" >builder</code></h3>
+                      <p><i>path | derivation, required</i></p>
+                      <p>
+                          An executable file used build the derivation.
+                      </p>
+                      <p>
+                          When the derivation is built, the builder's value is translated according to the
+                          rules below and executed in an isolated temporary directory.
+                      </p>
+                      <h4>Arguments</h4>
+                      <p>
+                          The builder is passed any command-line arguments from
+                          <a href="#derivation.outputs"><code class="literal">args</code></a>.
+                      </p>
+                      <h4>Environment Variables</h4>
+                      <p>
+                          Every input attribute is available to the builder as an environment variable. Each attribute
+                          value is translated to a string before it is stored.
+                      </p>
+                      <p>
+                          Values are translated as follows:
+                          <ul>
+                              <li>
+                                  <code class="literal">string</code>,
+                                  <code class="literal">number</code>: Copied verbatim
+                              </li>
+                              <li>
+                                  <code class="literal">path</code>: The referenced file is copied to the store,
+                                  and the environment variable is set to the resulting store location
+                              </li>
+                              <li>
+                                  <code class="literal">derivation</code>: The derivation is built
+                                  and the environment variable is set to the derivation's default output path
+                              </li>
+                              <li>
+                                  <code class="literal">list[string | number | path | derivation]</code>:
+                                  Each item is translated individually, and the environment variable
+                                  is set to the concatenation of the results
+                              </li>
+                              <li>
+                                  <code class="literal">bool</code>:
+                                  <code class="literal">true</code> is translated to
+                                  <code class="literal">1</code> and
+                                  <code class="literal">false</code>: is translated to the empty string
+                              </li>
+                              <li>
+                              <code class="literal">null</code>: translated to the empty string
+                              </li>
+                          </ul>
+                      </p>
+                      <p>
+                          For each item of <a href="#derivation.outputs"><code class="literal">outputs</code></a>,
+                          there is an environment variable of the same name that is set to the nix store path
+                          for that output.
+                      </p>
+                      <h4>Outputs</h4>
+                      <p>
+                          The builder must create a file or directory for each item in
+                          <a href="#derivation.outputs"><code class="literal">outputs</code></a>.
+                          If <a href="#derivation.outputs"><code class="literal">outputs</code></a> is omitted then
+                          it will default to <code class="literal">["out"]</code>.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+#! /bin/sh
+echo "hello" > $out
+</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "hello";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+}</pre>
+                      <br />
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+#! /bin/sh
+echo "hello" > $one
+echo "goodbye" > $two</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "hello-goodbye";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  outputs = ["one" "two"];
+}</pre>
+                      <br />
+
+                      <h3 id="derivation.args"><code class="literal">args</code></h3>
+                      <p><i>list[toString], optional</i></p>
+                      <p>
+                          A list of command line arguments to be passed to the builder.
+                      </p>
+                      <p>
+                          The list items can be any value that is convertible to a
+                          <code class="literal">string</code>. See
+                          <a href="#derivation.builder"><code class="literal">builder</code></a> for how these values
+                          are translated.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+#! /bin/sh
+echo $1
+echo $2</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "say-hello-world";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  args = ["hello" "world"];
+}</pre>
+                      <br />
+
+                      <h3 id="derivation.outputs"><code class="literal">outputs</code></h3>
+                      <p><i>list[string], optional</i></p>
+                      <p>
+                          A list of outputs from the derivation. Defaults to <code class="literal">["out"]</code>.
+                      </p>
+                      <p>
+                          The derivation will produce one output path per entry in
+                          <a href="#derivation.outputs"><code class="literal">outputs</code></a>.
+                          This allows outputs to be downloaded and garbage collected separately.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+#! /bin/sh
+echo "hello" > $one
+echo "world" > $two</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "write-hello-world";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  args = ["one" "two"];
+}</pre>
+                      <br />
+
+                      <h3 id="derivation.user-defined-attributes"><code class="literal">user-defined attributes</code></h3>
+                      <p><i>toString, optional</i></p>
+                      <p>
+                          The user may define any number of additional attributes.
+                      </p>
+                      <p>
+                          User-defined attributes are available to the builder through environment variables,
+                          so their values must be convertible to strings. See
+                          <a href="#derivation.builder"><code class="builder">builder</code></a> for more information.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+#! /bin/sh
+echo "$result" > $out
+echo "$count"
+echo "$word"</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+derivation {
+  name = "42-pelican";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  result = [ "one\n" "two\n" 3 ];
+  count = 42;
+  word = "pelican";
+}</pre>
+                      <br />
+
+                      <div style="min-height: 30vh">
+                          <!-- padding so that make the final item sits higher on the screen when in focus -->
+                      </div>
+
+                  </div>
+              </section>
+          </section>
+  </div>
+
+  </div><ul xmlns="http://www.w3.org/1999/xhtml" class="hidden"></ul>
+
+    <div class="footer">
+      <hr>
+      <center>
+        <small class="muted">          <a href="https://github.com/NixOS/nixpkgs/tree/master/doc">Source</a>        </small>
+      </center>
+    </div>
+
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $(".nixos-popover").popover({});
+    });
+  </script>
+  <script src="Nixpkgs%20manual_files/anchor.js"></script>
+  <script>
+    anchors.add('h1,h2,h3');
+  </script>
+
+
+
+</body></html>

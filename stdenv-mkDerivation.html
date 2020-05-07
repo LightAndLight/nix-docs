@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <title>stdenv.mkDerivation - nixpkgs</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+  <script type="text/javascript" src="Nixpkgs%20manual_files/jquery.js"></script>
+  <script type="text/javascript" src="Nixpkgs%20manual_files/jquery-ui.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script type="text/javascript" src="Nixpkgs%20manual_files/bootstrap.js"></script>
+  <style class="anchorjs"></style><link rel="stylesheet" href="Nixpkgs%20manual_files/bootstrap.css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/bootstrap-responsive.css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/nixos-site.css" type="text/css">
+
+  <link rel="stylesheet" href="Nixpkgs%20manual_files/font-awesome.css">
+
+  <link rel="shortcut icon" type="image/png" href="https://nixos.org/favicon.png">
+
+  <meta name="google-site-verification" content="ir-07nYvo3u3x_VmkTO1wCfYJ8uC-SrVBGR7hZgqPSE">
+
+</head>
+
+<body>
+
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <li class="dropdown brand">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+            <img src="Nixpkgs%20manual_files/nix-wiki.png" alt="NixOS" class="logo">            Nixpkgs            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+                        <li><a href="https://nixos.org/">Site Home</a></li>
+            <li><a href="https://nixos.org/nixos">NixOS</a></li>
+            <li><a href="https://nixos.org/nix">Nix</a></li>
+            <li><a href="https://nixos.org/nixpkgs">Nixpkgs</a></li>
+          </ul>
+        </li>
+
+        <div class="nav-collapse collapse">              <ul class="nav pull-left">
+                <li><a href="https://nixos.org/download.html">Download</a></li>
+                <li><a href="https://nixos.org/learn.html">Learn</a></li>
+                <li><a href="https://nixos.org/governance.html">Governance</a></li>
+                <li><a href="https://nixos.org/donate.html">Donate</a></li>
+              </ul>
+              <ul class="nav pull-right">
+                <li><a href="https://github.com/NixOS/nixpkgs"><i class="fa fa-github"></i></a></li>
+                  </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container main">
+      <script xmlns="http://www.w3.org/1999/xhtml" src="Nixpkgs%20manual_files/highlight.js" type="text/javascript" xml:space="preserve"></script>
+      <script xmlns="http://www.w3.org/1999/xhtml" src="Nixpkgs%20manual_files/loader.js" type="text/javascript" xml:space="preserve"></script>
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="Nixpkgs%20manual_files/overrides.css">
+      <link xmlns="http://www.w3.org/1999/xhtml" rel="stylesheet" type="text/css" href="Nixpkgs%20manual_files/mono-blue.css">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="docbook">
+
+          <section class="chapter">
+              <section class="section">
+                  <div class="titlepage">
+                      <div>
+                          <h2 class="title" style="clear: both">
+                              <code class="literal">mkDerivation</code>
+                          </h2>
+                      </div>
+                      <p>
+                          <code class="varname">stdenv.mkDerivation</code> is the main function used to build packages with the
+                          standard environment.
+                      </p>
+                      <h3>Inputs</h3>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+{
+  # core attributes
+  <a href="#mkDerivation.name">name</a>:            string,
+  <a href="#mkDerivation.pname">pname</a>:           string?,
+  <a href="#mkDerivation.version">version</a>:         string?,
+  <a href="#mkDerivation.src">src</a>:             path,
+
+  # building
+  <a href="#mkDerivation.buildInputs">buildInputs</a>:     list[derivation]?,
+  <a href="#mkDerivation.buildPhase">buildPhase</a>:      string?,
+  <a href="#mkDerivation.installPhase">installPhase</a>:    string?,
+  <a href="#mkDerivation.builder">builder</a>:         path?,
+
+  # `nix-shell`
+  <a href="#mkDerivation.shellHook">shellHook</a>:       string?
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.name"><code class="literal" >name</code></h3>
+                      <p><i>string, required</i></p>
+                      <p>The derivation name.</p>
+                      <p>
+                          Can be omitted if <a href="#mkDerivation.pname"><code class="literal">pname</code></a>
+                          and <a href="#mkDerivation.version"><code class="literal">version</code></a>
+                          are set, in which case it is automatically set to
+                          <code class="literal">${pname}-${version}</code>.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = ./src;
+}</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  pname = "libfoo";
+  version = "1.2.3";
+  src = ./src;
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.pname"><code class="literal" >pname</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>The package name.</p>
+                      <br />
+
+                      <h3 id="mkDerivation.version"><code class="literal" >version</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>The package version.</p>
+                      <br />
+
+                      <h3 id="mkDerivation.src"><code class="literal" >src</code></h3>
+                      <p><i>path, required</i></p>
+                      <p>The package version.</p>
+                      <p>
+                          By default,
+                          <code class="literal">mkDerivation</code> runs the commands
+                          <code class="literal">./configure; make; make install</code>
+                          inside the source directory to build the package. To override this behavior,
+                          use
+                          <a href="#mkDerivation.buildPhase">buildPhase</a>
+                          or
+                          <a href="#mkDerivation.buildPhase">installPhase</a>
+                          .
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = ./src;
+}</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = fetchurl {
+    url = http://example.org/libfoo-1.2.3.tar.bz2;
+    sha256 = "0x2g1jqygyr5wiwg4ma1nd7w4ydpy82z9gkcv8vh2v8dn3y58v5m";
+  };
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.buildInputs"><code class="literal" >buildInputs</code></h3>
+                      <p><i>list[derivation], optional</i></p>
+                      <p>The package's dependencies.</p>
+                      <p>This attribute ensures that the outputs of the dependencies (e.g.
+                          <code class="literal">bin</code>, <code class="literal">includes</code>)
+                          are in scope during the package build.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildInputs = [libbar perl ncurses];
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.buildPhase"><code class="literal" >buildPhase</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>
+                          A shell script to run during the build phase. If omitted, the build phase runs
+                          <code class="literal">make</code> in the <a href="mkDerivation.src">src</a> directory.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildPhase = ''
+    gcc foo.c -o foo
+  '';
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.installPhase"><code class="literal" >installPhase</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>
+                          A shell script to run during the install phase. If omitted, the build phase runs
+                          <code class="literal">make install</code> in the <a href="mkDerivation.src">src</a> directory.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildPhase = ''
+    gcc foo.c -o foo
+  '';
+  installPhase ''
+    mkdir -p $out/bin
+    cp foo $out/bin
+  '';
+}</pre>
+
+                      <h3 id="mkDerivation.builder"><code class="literal" >builder</code></h3>
+                      <p><i>path, optional</i></p>
+                      <p>
+                          The path to a shell script that describes how to build the package. If omitted, the
+                          build runs using <code class="literal">stdenv</code>'s generic builder.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs bash" xml:space="preserve">
+# builder.sh
+source $stdenv/setup
+
+buildPhase() {
+  echo "... this is my custom build phase ..."
+  gcc foo.c -o foo
+}
+
+installPhase() {
+  mkdir -p $out/bin
+  cp foo $out/bin
+}
+
+genericBuild</pre>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  builder = ./builder.sh;
+}</pre>
+                      <br />
+
+                      <h3 id="mkDerivation.shellHook"><code class="literal" >shellHook</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>
+                          A shell script to run after entering a <code class="literal">nix-shell</code>.
+                      </p>
+                      <p>
+                          If <code class="literal">shellHook</code> is defined, it will be run in the `nix-shell`
+                          after
+                          <code class="literal">$stdenv/setup</code> has been sourced by the package's
+                          <a href="#mkDerivation.builder">builder</a>.
+                      </p>
+                      <p>
+                          Note: This hook is not executed by regular Nix builds.
+                      </p>
+                      <h4>Examples:</h4>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "my-package";
+  src = ./src;
+  shellHook = ''
+    echo "Hello shell!"
+  '';
+}</pre>
+                      <br />
+
+                      <div style="min-height: 30vh">
+                          <!-- padding so that make the final item sits higher on the screen when in focus -->
+                      </div>
+
+                  </div>
+              </section>
+          </section>
+  </div>
+
+  </div><ul xmlns="http://www.w3.org/1999/xhtml" class="hidden"></ul>
+
+    <div class="footer">
+      <hr>
+      <center>
+        <small class="muted">          <a href="https://github.com/NixOS/nixpkgs/tree/master/doc">Source</a>        </small>
+      </center>
+    </div>
+
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $(".nixos-popover").popover({});
+    });
+  </script>
+  <script src="Nixpkgs%20manual_files/anchor.js"></script>
+  <script>
+    anchors.add('h1,h2,h3');
+  </script>
+
+
+
+</body></html>
