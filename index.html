@@ -79,14 +79,20 @@
                       <h3>Inputs</h3>
                       <pre class="programlisting hljs nix" xml:space="preserve">
 {
+  # core attributes
   <a href="#mkDerivation.name">name</a>:            string,
   <a href="#mkDerivation.pname">pname</a>:           string?,
   <a href="#mkDerivation.version">version</a>:         string?,
   <a href="#mkDerivation.src">src</a>:             path,
+
+  # building
   <a href="#mkDerivation.buildInputs">buildInputs</a>:     list[derivation]?,
   <a href="#mkDerivation.buildPhase">buildPhase</a>:      string?,
   <a href="#mkDerivation.installPhase">installPhase</a>:    string?,
   <a href="#mkDerivation.builder">builder</a>:         path?,
+
+  # `nix-shell`
+  <a href="#mkDerivation.shellHook">shellHook</a>:       string?
 }</pre>
                       <br />
 
@@ -133,6 +139,10 @@ stdenv.mkDerivation {
                           <code class="literal">./configure; make; make install</code>
                           inside the source directory to build the package. To override this behavior,
                           use
+                          <a href="#mkDerivation.buildPhase">buildPhase</a>
+                          or
+                          <a href="#mkDerivation.buildPhase">installPhase</a>
+                          .
                       </p>
                       <br />
                       <p>Examples:</p>
@@ -237,6 +247,31 @@ stdenv.mkDerivation {
   builder = ./builder.sh;
 }</pre>
                       <br />
+
+                      <h3 id="mkDerivation.shellHook"><code class="literal" >shellHook</code></h3>
+                      <p><i>string, optional</i></p>
+                      <p>
+                          A shell script to run before entering a <code class="literal">nix-shell</code>.
+                      </p>
+                      <p>
+                          If <code class="literal">shellHook</code> is defined, it will be evaluated after
+                          <code class="literal">$stdenv/setup</code> has been sourced by the package's
+                          <a href="#mkDerivation.builder">builder</a>.
+                      </p>
+                      <p>
+                          Note: This hook is not executed by regular Nix builds.
+                      </p>
+                      <br />
+
+                      <p>Examples:</p>
+                      <pre class="programlisting hljs nix" xml:space="preserve">
+stdenv.mkDerivation {
+  name = "my-package";
+  src = ./src;
+  shellHook = ''
+    echo "Hello shell!"
+  '';
+}</pre>
 
                   </div>
               </section>
