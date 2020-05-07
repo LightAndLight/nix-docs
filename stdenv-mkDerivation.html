@@ -135,18 +135,7 @@ stdenv.mkDerivation {
 
                       <h3 id="mkDerivation.src"><code class="literal" >src</code></h3>
                       <p><i>path, required</i></p>
-                      <p>The package version.</p>
-                      <p>
-                          By default,
-                          <code class="literal">mkDerivation</code> runs the commands
-                          <code class="literal">./configure; make; make install</code>
-                          inside the source directory to build the package. To override this behavior,
-                          use
-                          <a href="#mkDerivation.buildPhase">buildPhase</a>
-                          or
-                          <a href="#mkDerivation.buildPhase">installPhase</a>
-                          .
-                      </p>
+                      <p>The package source directory.</p>
                       <h4>Examples:</h4>
                       <pre class="programlisting hljs nix" xml:space="preserve">
 stdenv.mkDerivation {
@@ -182,8 +171,8 @@ stdenv.mkDerivation {
                       <h3 id="mkDerivation.buildPhase"><code class="literal" >buildPhase</code></h3>
                       <p><i>string, optional</i></p>
                       <p>
-                          A shell script to run during the build phase. If omitted, the build phase runs
-                          <code class="literal">make</code> in the <a href="mkDerivation.src">src</a> directory.
+                          A shell script to run during the build phase. If omitted, the build phase will run
+                          <code class="literal">make</code>.
                       </p>
                       <h4>Examples:</h4>
                       <pre class="programlisting hljs nix" xml:space="preserve">
@@ -199,8 +188,8 @@ stdenv.mkDerivation {
                       <h3 id="mkDerivation.installPhase"><code class="literal" >installPhase</code></h3>
                       <p><i>string, optional</i></p>
                       <p>
-                          A shell script to run during the install phase. If omitted, the build phase runs
-                          <code class="literal">make install</code> in the <a href="mkDerivation.src">src</a> directory.
+                          A shell script to run during the install phase. If omitted, the install phase will run
+                          <code class="literal">make install</code>.
                       </p>
                       <h4>Examples:</h4>
                       <pre class="programlisting hljs nix" xml:space="preserve">
