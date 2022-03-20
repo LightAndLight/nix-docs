@@ -51,6 +51,16 @@ impl Documentation {
             writeln!(buffer, "<head>")?;
             writeln!(buffer, "<meta charset=\"UTF-8\">")?;
             writeln!(buffer, "<title>{}</title>", value.title)?;
+            writeln!(buffer, "<link rel=\"stylesheet\" href=\"style.css\">")?;
+            writeln!(
+                buffer,
+                "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
+            )?;
+            writeln!(
+                buffer,
+                "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
+            )?;
+            writeln!(buffer, "<link href=\"https://fonts.googleapis.com/css2?family=Overpass:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap\" rel=\"stylesheet\">")?;
             writeln!(buffer, "</head>")?;
 
             writeln!(buffer, "<body>")?;

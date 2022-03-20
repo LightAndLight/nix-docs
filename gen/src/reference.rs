@@ -25,7 +25,11 @@ impl<'a> RecordFieldReference<'a> {
                     optional,
                     docs,
                 } => {
-                    writeln!(buffer, "<h5 id=\"reference-inputs-{}\">{}</h5>", name, name)?;
+                    writeln!(
+                        buffer,
+                        "<h5 id=\"reference-inputs-{}\" style=\"font-weight: 500;\"><code>{}</code></h5>",
+                        name, name
+                    )?;
 
                     write!(buffer, "<p><i>")?;
                     {

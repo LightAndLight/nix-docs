@@ -23,21 +23,26 @@ impl<'a> RecordFieldSummary<'a> {
                     optional,
                     r#type,
                 } => {
-                    write!(
+                    writeln!(buffer, "<tr>")?;
+                    writeln!(
                         buffer,
-                        "  <a href=\"#reference-inputs-{}\">{}</a>{}: ",
+                        "<td><a href=\"#reference-inputs-{}\">{}</a>{}:</td>",
                         name,
                         name,
                         if *optional { "?" } else { "" }
                     )?;
+                    write!(buffer, "<td>")?;
                     {
                         let buffer = &mut *buffer;
-                        r#type.write_name(buffer)?;
-                    }
-                    writeln!(buffer)
+                        r#type.write_name(buffer)
+                    }?;
+                    writeln!(buffer, "</td>")?;
+                    writeln!(buffer, "</tr>")
                 }
                 RecordFieldSummary::Section { title, fields } => {
-                    writeln!(buffer, "  # {}", title)?;
+                    writeln!(buffer, "<tr><td>")?;
+                    writeln!(buffer, "  <span class=\"comment\"># {}</span>", title)?;
+                    writeln!(buffer, "</td></tr>")?;
                     fields.iter().try_for_each(|field| {
                         let buffer = &mut *buffer;
                         field.write_html(buffer)
@@ -135,8 +140,15 @@ impl<'a> Summary<'a> {
                     Ok(())
                 }
                 Summary::Record { fields } => {
-                    write!(buffer, "<pre><code>")?;
-                    writeln!(buffer, "{{")?;
+                    writeln!(buffer, "<div class=\"code\">")?;
+                    write!(buffer, "<code>")?;
+                    writeln!(
+                        buffer,
+                        "<p style=\"margin-top: 0.5rem; margin-bottom: 0.5rem;\">{{</p>"
+                    )?;
+
+                    writeln!(buffer, "<table style=\"padding-left: 1rem;\">")?;
+                    writeln!(buffer, "<tbody>")?;
 
                     enum RecordFieldType {
                         Item,
@@ -144,10 +156,10 @@ impl<'a> Summary<'a> {
                     }
                     let mut previous_field: Option<RecordFieldType> = None;
                     fields.iter().try_for_each(|field| {
-                        // Add an extra newline after every section that's followed by another
-                        // record field.
                         match previous_field {
-                            Some(RecordFieldType::Section) => writeln!(buffer),
+                            Some(RecordFieldType::Section) => {
+                                writeln!(buffer, "<tr><td>&nbsp;</td></tr>")
+                            }
                             _ => Ok(()),
                         }?;
 
@@ -160,8 +172,15 @@ impl<'a> Summary<'a> {
                         field.write_html(buffer)
                     })?;
 
-                    writeln!(buffer, "}}")?;
-                    writeln!(buffer, "</pre></code>")?;
+                    writeln!(buffer, "</tbody>")?;
+                    writeln!(buffer, "</table>")?;
+
+                    writeln!(
+                        buffer,
+                        "<p style=\"margin-top: 0.5rem; margin-bottom: 0.5rem\">}}</p>"
+                    )?;
+                    writeln!(buffer, "</code>")?;
+                    writeln!(buffer, "</div>")?;
                     Ok(())
                 }
                 Summary::Simple(ty) => {
