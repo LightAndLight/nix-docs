@@ -1,0 +1,13 @@
+[package]
+name = "nix-docs-gen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "3.1", features = ["derive"] }
+ciborium = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+
+[[bin]]
+name = "nix-docs"
+path = "src/main.rs"
