@@ -1,10 +1,13 @@
+use clap::{Parser, Subcommand};
+use nix_docs_gen::{
+    r#type::{RecordField, RecordFieldItem, Type},
+    Documentation,
+};
 use std::{
     fs::File,
     io::{BufReader, BufWriter},
     path::{Path, PathBuf},
 };
-use clap::{Parser, Subcommand};
-use nix_docs_gen::{Documentation, r#type::{Type, RecordField}};
 
 #[derive(Subcommand)]
 enum Command {
@@ -96,66 +99,71 @@ fn test(path: &Path) -> nix_docs_gen::Result<()> {
                 RecordField::Section{
                     title: String::from("Core Attributes"),
                     fields: vec![
-                        RecordField::Item{ 
-                            name: String::from("name"), 
+                        RecordFieldItem{
+                            name: String::from("name"),
                             optional: false,
-                            r#type: Type::String, 
-                            docs: String::from("The derivation name.") 
+                            r#type: Type::String,
+                            docs: String::from("The derivation name.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("pname"), 
+                        RecordFieldItem{
+                            name: String::from("pname"),
                             optional: true,
-                            r#type: Type::String, 
-                            docs: String::from("The package name.") 
+                            r#type: Type::String,
+                            docs: String::from("The package name.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("version"), 
+                        RecordFieldItem{
+                            name: String::from("version"),
                             optional: true,
-                            r#type: Type::String, 
-                            docs: String::from("The package version.") 
+                            r#type: Type::String,
+                            docs: String::from("The package version.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("src"), 
+                        RecordFieldItem{
+                            name: String::from("src"),
                             optional: false,
-                            r#type: Type::Path, 
-                            docs: String::from("The package source directory.") 
+                            r#type: Type::Path,
+                            docs: String::from("The package source directory.")
                         },
                     ]
                 },
                 RecordField::Section{
                     title: String::from("Building"),
                     fields: vec![
-                        RecordField::Item{ 
-                            name: String::from("buildInputs"), 
+                        RecordFieldItem{
+                            name: String::from("buildInputs"),
                             optional: true,
-                            r#type: Type::List(Box::new(Type::Derivation)), 
-                            docs: String::from("The package's dependencies.") 
+                            r#type: Type::List(Box::new(Type::Derivation)),
+                            docs: String::from("The package's dependencies.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("buildPhase"), 
+                        RecordFieldItem{
+                            name: String::from("buildPhase"),
                             optional: true,
-                            r#type: Type::String, 
-                            docs: String::from("A shell script to run during the build phase. If omitted, the build phase will run make.") 
+                            r#type: Type::String,
+                            docs: String::from("A shell script to run during the build phase. If omitted, the build phase will run make.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("installPhase"), 
+                        RecordFieldItem{
+                            name: String::from("installPhase"),
                             optional: true,
-                            r#type: Type::String, 
-                            docs: String::from("A shell script to run during the install phase. If omitted, the install phase will run make install.") 
+                            r#type: Type::String,
+                            docs: String::from("A shell script to run during the install phase. If omitted, the install phase will run make install.")
                         },
-                        RecordField::Item{ 
-                            name: String::from("builder"), 
+                        RecordFieldItem{
+                            name: String::from("builder"),
                             optional: true,
                             r#type: Type::Path,
-                            docs: String::from("The path to a shell script that describes how to build the package. If omitted, the build runs using stdenv's generic builder.") 
+                            docs: String::from("The path to a shell script that describes how to build the package. If omitted, the build runs using stdenv's generic builder.")
                         },
                     ]
                 },
-                RecordField::Item{ 
-                    name: String::from("shellHook"), 
-                    optional: true,
-                    r#type: Type::String,
-                    docs: String::from("A shell script to run after entering a nix-shell.") 
+                RecordField::Section{
+                    title: String::from("Nix shell"),
+                    fields: vec![
+                        RecordFieldItem{
+                            name: String::from("shellHook"),
+                            optional: true,
+                            r#type: Type::String,
+                            docs: String::from("A shell script to run after entering a nix-shell.")
+                        }
+                    ]
                 },
             ])}),
             output: Box::new(Type::Derivation),

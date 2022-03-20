@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-use crate::r#type::{RecordField, Type};
+use crate::r#type::{RecordField, RecordFieldItem, Type};
 
 pub enum RecordFieldReference<'a> {
     Item {
@@ -25,7 +25,7 @@ impl<'a> RecordFieldReference<'a> {
                     optional,
                     docs,
                 } => {
-                    writeln!(buffer, "<h4 id=\"reference-inputs-{}\">{}</h4>", name, name)?;
+                    writeln!(buffer, "<h5 id=\"reference-inputs-{}\">{}</h5>", name, name)?;
 
                     write!(buffer, "<p><i>")?;
                     {
@@ -45,7 +45,14 @@ impl<'a> RecordFieldReference<'a> {
 
                     Ok(())
                 }
-                RecordFieldReference::Section { title, fields } => todo!(),
+                RecordFieldReference::Section { title, fields } => {
+                    writeln!(buffer, "<h4>{}</h4>", title)?;
+                    fields.iter().try_for_each(|field| {
+                        let buffer = &mut *buffer;
+                        field.write_html(buffer)
+                    })?;
+                    Ok(())
+                }
             }
         }
         inner(self, &mut buffer)
@@ -76,6 +83,15 @@ impl<'a> Reference<'a> {
                 }
             }
             Type::Record { fields } => fields.as_ref().and_then(|fields| {
+                fn from_record_field_item(field: &RecordFieldItem) -> RecordFieldReference {
+                    RecordFieldReference::Item {
+                        name: &field.name,
+                        r#type: &field.r#type,
+                        optional: field.optional,
+                        docs: &field.docs,
+                    }
+                }
+
                 if fields.is_empty() {
                     None
                 } else {
@@ -83,18 +99,13 @@ impl<'a> Reference<'a> {
                         fields: fields
                             .iter()
                             .map(|field| match field {
-                                RecordField::Item {
-                                    name,
-                                    optional,
-                                    r#type,
-                                    docs,
-                                } => RecordFieldReference::Item {
-                                    name,
-                                    r#type,
-                                    optional: *optional,
-                                    docs,
-                                },
-                                RecordField::Section { title, fields } => todo!(),
+                                RecordField::Item(item) => from_record_field_item(item),
+                                RecordField::Section { title, fields } => {
+                                    RecordFieldReference::Section {
+                                        title,
+                                        fields: fields.iter().map(from_record_field_item).collect(),
+                                    }
+                                }
                             })
                             .collect(),
                     })

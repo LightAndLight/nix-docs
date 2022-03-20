@@ -2,16 +2,19 @@ use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct RecordFieldItem {
+    pub name: String,
+    pub optional: bool,
+    pub r#type: Type,
+    pub docs: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub enum RecordField {
-    Item {
-        name: String,
-        optional: bool,
-        r#type: Type,
-        docs: String,
-    },
+    Item(RecordFieldItem),
     Section {
         title: String,
-        fields: Vec<RecordField>,
+        fields: Vec<RecordFieldItem>,
     },
 }
 

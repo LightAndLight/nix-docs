@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-use crate::r#type::{RecordField, Type};
+use crate::r#type::{RecordField, RecordFieldItem, Type};
 
 pub enum RecordFieldSummary<'a> {
     Item {
@@ -37,9 +37,12 @@ impl<'a> RecordFieldSummary<'a> {
                     writeln!(buffer)
                 }
                 RecordFieldSummary::Section { title, fields } => {
-                    // # $title
-                    // fields
-                    todo!()
+                    writeln!(buffer, "  # {}", title)?;
+                    fields.iter().try_for_each(|field| {
+                        let buffer = &mut *buffer;
+                        field.write_html(buffer)
+                    })?;
+                    Ok(())
                 }
             }
         }
@@ -76,28 +79,28 @@ impl<'a> Summary<'a> {
                 Summary::Function { input, output }
             }
             Type::Record { fields } => {
-                fn record_field_summary(field: &RecordField) -> RecordFieldSummary {
-                    match field {
-                        RecordField::Item {
-                            name,
-                            optional,
-                            r#type,
-                            docs,
-                        } => RecordFieldSummary::Item {
-                            name,
-                            optional: *optional,
-                            r#type,
-                        },
-                        RecordField::Section { title, fields } => RecordFieldSummary::Section {
-                            title,
-                            fields: fields.iter().map(record_field_summary).collect(),
-                        },
+                fn from_record_field_item(field: &RecordFieldItem) -> RecordFieldSummary {
+                    RecordFieldSummary::Item {
+                        name: &field.name,
+                        optional: field.optional,
+                        r#type: &field.r#type,
                     }
                 }
 
                 match fields {
                     Some(fields) if !fields.is_empty() => Summary::Record {
-                        fields: fields.iter().map(record_field_summary).collect(),
+                        fields: fields
+                            .iter()
+                            .map(|field| match field {
+                                RecordField::Item(item) => from_record_field_item(item),
+                                RecordField::Section { title, fields } => {
+                                    RecordFieldSummary::Section {
+                                        title,
+                                        fields: fields.iter().map(from_record_field_item).collect(),
+                                    }
+                                }
+                            })
+                            .collect(),
                     },
                     _ => Summary::Simple(ty),
                 }
@@ -134,10 +137,29 @@ impl<'a> Summary<'a> {
                 Summary::Record { fields } => {
                     write!(buffer, "<pre><code>")?;
                     writeln!(buffer, "{{")?;
+
+                    enum RecordFieldType {
+                        Item,
+                        Section,
+                    }
+                    let mut previous_field: Option<RecordFieldType> = None;
                     fields.iter().try_for_each(|field| {
+                        // Add an extra newline after every section that's followed by another
+                        // record field.
+                        match previous_field {
+                            Some(RecordFieldType::Section) => writeln!(buffer),
+                            _ => Ok(()),
+                        }?;
+
+                        previous_field = Some(match field {
+                            RecordFieldSummary::Item { .. } => RecordFieldType::Item,
+                            RecordFieldSummary::Section { .. } => RecordFieldType::Section,
+                        });
+
                         let buffer = &mut *buffer;
                         field.write_html(buffer)
                     })?;
+
                     writeln!(buffer, "}}")?;
                     writeln!(buffer, "</pre></code>")?;
                     Ok(())
