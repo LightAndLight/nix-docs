@@ -1,13 +1,16 @@
 use std::io::{self, Write};
 
-use crate::r#type::{RecordField, RecordFieldItem, Type};
+use crate::{
+    markup::Markup,
+    r#type::{RecordField, RecordFieldItem, Type},
+};
 
 pub enum RecordFieldReference<'a> {
     Item {
         name: &'a str,
         r#type: &'a Type,
         optional: bool,
-        docs: &'a str,
+        docs: &'a Markup,
     },
     Section {
         title: &'a str,
@@ -45,7 +48,10 @@ impl<'a> RecordFieldReference<'a> {
                     }?;
                     write!(buffer, "</i></p>")?;
 
-                    writeln!(buffer, "<p>{}</p>", docs)?;
+                    {
+                        let buffer = &mut *buffer;
+                        docs.write_html(buffer)
+                    }?;
 
                     Ok(())
                 }

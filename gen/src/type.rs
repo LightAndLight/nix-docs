@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
+use crate::markup::Markup;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RecordFieldItem {
     pub name: String,
     pub optional: bool,
     pub r#type: Type,
-    pub docs: String,
+    pub docs: Markup,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,3 +1,4 @@
+pub mod markup;
 pub mod reference;
 pub mod summary;
 pub mod r#type;

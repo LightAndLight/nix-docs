@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use nix_docs_gen::{
+    markup::{Block, Markup, Text},
     r#type::{RecordField, RecordFieldItem, Type},
     Documentation,
 };
@@ -103,25 +104,46 @@ fn test(path: &Path) -> nix_docs_gen::Result<()> {
                             name: String::from("name"),
                             optional: false,
                             r#type: Type::String,
-                            docs: String::from("The derivation name.")
+                            docs: Markup(vec![
+                                Block::Paragraph(vec![
+                                    Text::Plain(String::from("The derivation name.")),
+                                ]),
+                                Block::Paragraph(vec![
+                                    Text::Plain(String::from("Can be omitted if ")),
+                                    Text::Link{destination: String::from("#reference-inputs-pname"), text: String::from("pname")},
+                                    Text::Plain(String::from(" and ")),
+                                    Text::Link{destination: String::from("#reference-inputs-version"), text: String::from("version")},
+                                    Text::Plain(String::from(" are set, in which case it is automatically set to ")),
+                                    Text::Code(String::from("${pname}-${version}")),
+                                    Text::Plain(String::from(".")),
+                                ]),
+                                Block::Paragraph(vec![Text::Bold(String::from("Examples"))]),
+                                Block::Code(String::from("stdenv.mkDerivation {\n  name = \"libfoo-1.2.3\";\n  src = ./src;\n}\n")),
+                                Block::Code(String::from("stdenv.mkDerivation {\n  pname = \"libfoo\";\n  version = \"1.2.3\";\n  src = ./src;\n}")),
+                            ])
                         },
                         RecordFieldItem{
                             name: String::from("pname"),
                             optional: true,
                             r#type: Type::String,
-                            docs: String::from("The package name.")
+                            docs: Markup::paragraph("The package name.")
                         },
                         RecordFieldItem{
                             name: String::from("version"),
                             optional: true,
                             r#type: Type::String,
-                            docs: String::from("The package version.")
+                            docs: Markup::paragraph("The package version.")
                         },
                         RecordFieldItem{
                             name: String::from("src"),
                             optional: false,
                             r#type: Type::Path,
-                            docs: String::from("The package source directory.")
+                            docs: Markup(vec![
+                                Block::paragraph("The package source directory."),
+                                Block::Paragraph(vec![Text::bold("Examples")]),
+                                Block::code("stdenv.mkDerivation {\n  name = \"libfoo-1.2.3\";\n  src = ./src;\n}"),
+                                Block::code("stdenv.mkDerivation {\n  name = \"libfoo-1.2.3\";\n  src = fetchurl {\n    url = http://example.org/libfoo-1.2.3.tar.bz2;\n    sha256 = \"0x2g1jqygyr5wiwg4ma1nd7w4ydpy82z9gkcv8vh2v8dn3y58v5m\";\n  };\n}"),
+                            ])
                         },
                     ]
                 },
@@ -132,25 +154,25 @@ fn test(path: &Path) -> nix_docs_gen::Result<()> {
                             name: String::from("buildInputs"),
                             optional: true,
                             r#type: Type::List(Box::new(Type::Derivation)),
-                            docs: String::from("The package's dependencies.")
+                            docs: Markup::paragraph("The package's dependencies.")
                         },
                         RecordFieldItem{
                             name: String::from("buildPhase"),
                             optional: true,
                             r#type: Type::String,
-                            docs: String::from("A shell script to run during the build phase. If omitted, the build phase will run make.")
+                            docs: Markup::paragraph("A shell script to run during the build phase. If omitted, the build phase will run make.")
                         },
                         RecordFieldItem{
                             name: String::from("installPhase"),
                             optional: true,
                             r#type: Type::String,
-                            docs: String::from("A shell script to run during the install phase. If omitted, the install phase will run make install.")
+                            docs: Markup::paragraph("A shell script to run during the install phase. If omitted, the install phase will run make install.")
                         },
                         RecordFieldItem{
                             name: String::from("builder"),
                             optional: true,
                             r#type: Type::Path,
-                            docs: String::from("The path to a shell script that describes how to build the package. If omitted, the build runs using stdenv's generic builder.")
+                            docs: Markup::paragraph("The path to a shell script that describes how to build the package. If omitted, the build runs using stdenv's generic builder.")
                         },
                     ]
                 },
@@ -161,7 +183,7 @@ fn test(path: &Path) -> nix_docs_gen::Result<()> {
                             name: String::from("shellHook"),
                             optional: true,
                             r#type: Type::String,
-                            docs: String::from("A shell script to run after entering a nix-shell.")
+                            docs: Markup::paragraph("A shell script to run after entering a nix-shell.")
                         }
                     ]
                 },
