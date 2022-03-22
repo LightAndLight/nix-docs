@@ -44,8 +44,27 @@ A platform identifier.</p>
 The resulting derivation can only be built on a machine with a matching platform identifier. Platform identifiers should be specified in <a href=https://clang.llvm.org/docs/CrossCompilation.html>Clang target-triple format</a>.</p>
 <p>
 Valid platform identifiers include:</p>
+<ul>
+<li>
 <p>
-(list platforms here)</p>
+<code>i386-linux</code></p>
+</li>
+<li>
+<p>
+<code>x86_64-darwin</code></p>
+</li>
+<li>
+<p>
+<code>armv7-linux-androideabi</code></p>
+</li>
+</ul>
 <p>
 The current platform identifier can be retrieved using <a href=https://nixos.org/nix/manual/#ssec-builtins>builtins.currentSystem</a>.</p>
+<p>
+<b>Example</b></p>
+<pre><code>derivation {
+  name = "hello";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+}</code></pre>
 </body>

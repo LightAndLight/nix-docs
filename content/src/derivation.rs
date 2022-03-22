@@ -1,5 +1,5 @@
 use nix_docs_gen::{
-    markup::{Block, Markup, Text},
+    markup::{Block, Markup, Text, ListOrdering, ListItem},
     r#type::{RecordField, RecordFieldItem, Type},
     Documentation,
 };
@@ -32,12 +32,21 @@ pub fn docs() -> Documentation {
                                 Text::plain(".")
                             ]),
                             Block::paragraph("Valid platform identifiers include:"),
-                            Block::paragraph("(list platforms here)"),
+                            Block::List{
+                                ordering: ListOrdering::Unordered, 
+                                items: vec![
+                                    ListItem::block(Block::Paragraph(vec![Text::code("i386-linux")])),
+                                    ListItem::block(Block::Paragraph(vec![Text::code("x86_64-darwin")])),
+                                    ListItem::block(Block::Paragraph(vec![Text::code("armv7-linux-androideabi")])),
+                                ]
+                            },
                             Block::Paragraph(vec![
                                 Text::plain("The current platform identifier can be retrieved using "),
                                 Text::Link{destination: String::from("https://nixos.org/nix/manual/#ssec-builtins"), text: String::from("builtins.currentSystem")},
                                 Text::plain(".")
-                            ])
+                            ]),
+                            Block::Paragraph(vec![Text::bold("Example")]),
+                            Block::code("derivation {\n  name = \"hello\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n}"),
                         ]),
                     })
                 ]),

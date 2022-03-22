@@ -64,9 +64,37 @@ impl Text {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub enum ListOrdering {
+    Ordered,
+    Unordered,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ListItem(pub Vec<Block>);
+
+impl ListItem {
+    pub fn block(block: Block) -> Self {
+        ListItem(vec![block])
+    }
+
+    pub fn write_html(&self, buffer: &mut dyn Write) -> io::Result<()> {
+        writeln!(buffer, "<li>")?;
+        self.0
+            .iter()
+            .try_for_each(|block| block.write_html(buffer))?;
+        writeln!(buffer, "</li>")?;
+        Ok(())
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Block {
     Paragraph(Vec<Text>),
     Code(String),
+    List {
+        ordering: ListOrdering,
+        items: Vec<ListItem>,
+    },
 }
 
 impl Block {
@@ -92,6 +120,18 @@ impl Block {
                 write!(buffer, "<pre><code>")?;
                 buffer.write_all(code.as_bytes())?;
                 writeln!(buffer, "</code></pre>")?;
+                Ok(())
+            }
+            Block::List { ordering, items } => {
+                match ordering {
+                    ListOrdering::Ordered => writeln!(buffer, "<ol>"),
+                    ListOrdering::Unordered => writeln!(buffer, "<ul>"),
+                }?;
+                items.iter().try_for_each(|item| item.write_html(buffer))?;
+                match ordering {
+                    ListOrdering::Ordered => writeln!(buffer, "</ol>"),
+                    ListOrdering::Unordered => writeln!(buffer, "</ul>"),
+                }?;
                 Ok(())
             }
         }
