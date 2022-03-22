@@ -26,6 +26,14 @@ pub enum Text {
 }
 
 impl Text {
+    pub fn plain(text: &str) -> Self {
+        Text::Plain(String::from(text))
+    }
+
+    pub fn code(text: &str) -> Self {
+        Text::Code(String::from(text))
+    }
+
     pub fn bold(text: &str) -> Self {
         Text::Bold(String::from(text))
     }

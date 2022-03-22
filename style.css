@@ -1,0 +1,63 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  max-width: 70rem;
+  margin: auto;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Overpass', sans-serif;
+  font-weight: 800;
+  color: rgb(101, 134, 200);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 26px;
+}
+
+h4 {
+  font-size: 22px;
+}
+
+h5 {
+  font-size: 20px;
+}
+
+a {
+  text-decoration: none;
+  border-bottom: 1px solid;
+  color: #405D99;
+}
+
+pre {
+  background: #f2f8fd;
+  color: #000000;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.1) inset;
+  border-radius: 1.25rem;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.code {
+  background: #f2f8fd;
+  color: #000000;
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.1) inset;
+  border-radius: 1.25rem;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.comment {
+  color: rgb(115, 129, 145)
+}
