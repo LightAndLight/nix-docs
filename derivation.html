@@ -23,6 +23,10 @@
 <td><a href="#reference-inputs-system">system</a>:</td>
 <td>string</td>
 </tr>
+<tr>
+<td><a href="#reference-inputs-builder">builder</a>:</td>
+<td>path | derivation</td>
+</tr>
 </tbody>
 </table>
 <p style="margin-top: 0.5rem; margin-bottom: 0.5rem">}</p>
@@ -66,5 +70,76 @@ The current platform identifier can be retrieved using <a href=https://nixos.org
   name = "hello";
   system = builtins.currentSystem;
   builder = ./builder.sh;
+}</code></pre>
+<h5 id="reference-inputs-builder" style="font-weight: 500;"><code>builder</code></h5>
+<p><i>path | derivation, required</i></p><p>
+An executable file used build the derivation.</p>
+<p>
+When the derivation is built, the builder is executed in an isolated temporary directory.</p>
+<p>
+<b>Arguments</b></p>
+<p>
+The builder is passed any command-line arguments from <a href=#reference-inputs-args>args</a>.</p>
+<p>
+<b>Environment Variables</b></p>
+<p>
+Every input attribute is available to the builder as an environment variable. Each attribute value is translated to a string before it is stored.</p>
+<p>
+Values are translated as follows:</p>
+<ul>
+<li>
+<p>
+<code>string</code>, <code>number</code>: copied verbatim.</p>
+</li>
+<li>
+<p>
+<code>path</code>: the referenced file is copied to the store, and the environment variable is set to the resulting store location.</p>
+</li>
+<li>
+<p>
+<code>derivation</code>: the derivation is built and the environment variable is set to the derivation's default output path.</p>
+</li>
+<li>
+<p>
+<code>list[string | number | path | derivation]</code>: each item is translated individually, and the environment variable is set to the space-separated concatenation of the results.</p>
+</li>
+<li>
+<p>
+<code>bool</code>: <code>true</code> is translated to 1 and <code>false</code>: is translated to the empty string.</p>
+</li>
+<li>
+<p>
+<code>null</code>: translated to the empty string.</p>
+</li>
+<li>
+<p>
+For each item of <a href=#reference-inputs-outputs>outputs</a> there is an environment variable of the same name that is set to the store path for that output.</p>
+</li>
+</ul>
+<p>
+<b>Outputs</b></p>
+<p>
+The builder must create a file or directory for each item in <a href=#reference-inputs-outputs>outputs</a>. If <a href=#reference-inputs-outputs>outputs</a> is omitted then it will default to <code>["out"]</code>.</p>
+<p>
+<b>Examples</b></p>
+<pre><code># builder.sh
+#! /bin/sh
+echo "hello" > $out</code></pre>
+<pre><code>derivation {
+  name = "hello";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+}</code></pre>
+<p>
+&nbsp;</p>
+<pre><code># builder.sh
+#! /bin/sh
+echo "hello" > $one
+echo "goodbye" > $two</code></pre>
+<pre><code>derivation {
+name = "hello-goodbye";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  outputs = ["one" "two"];
 }</code></pre>
 </body>

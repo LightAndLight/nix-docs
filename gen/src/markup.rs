@@ -77,6 +77,10 @@ impl ListItem {
         ListItem(vec![block])
     }
 
+    pub fn paragraph(text: Vec<Text>) -> Self {
+        Self::block(Block::Paragraph(text))
+    }
+
     pub fn write_html(&self, buffer: &mut dyn Write) -> io::Result<()> {
         writeln!(buffer, "<li>")?;
         self.0

@@ -48,6 +48,81 @@ pub fn docs() -> Documentation {
                             Block::Paragraph(vec![Text::bold("Example")]),
                             Block::code("derivation {\n  name = \"hello\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n}"),
                         ]),
+                    }),
+                    RecordField::Item(RecordFieldItem {
+                        name: String::from("builder"),
+                        optional: false,
+                        r#type: Type::Union(Box::new(Type::Path), Box::new(Type::Derivation)),
+                        docs: Markup(vec![
+                            Block::paragraph("An executable file used build the derivation."),
+                            Block::paragraph("When the derivation is built, the builder is executed in an isolated temporary directory."),
+                            Block::Paragraph(vec![Text::bold("Arguments")]),
+                            Block::Paragraph(vec![
+                                Text::plain("The builder is passed any command-line arguments from "),
+                                Text::Link{destination: String::from("#reference-inputs-args"), text: String::from("args")},
+                                Text::plain("."),
+                            ]),
+                            Block::Paragraph(vec![Text::bold("Environment Variables")]),
+                            Block::paragraph("Every input attribute is available to the builder as an environment variable. Each attribute value is translated to a string before it is stored."),
+                            Block::paragraph("Values are translated as follows:"),
+                            Block::List{
+                                ordering: ListOrdering::Unordered,
+                                items: vec![
+                                    ListItem::paragraph(vec![
+                                        Text::code("string"),
+                                        Text::plain(", "),
+                                        Text::code("number"),
+                                        Text::plain(": copied verbatim."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::code("path"),
+                                        Text::plain(": the referenced file is copied to the store, and the environment variable is set to the resulting store location."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::code("derivation"),
+                                        Text::plain(": the derivation is built and the environment variable is set to the derivation's default output path."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::code("list[string | number | path | derivation]"),
+                                        Text::plain(": each item is translated individually, and the environment variable is set to the space-separated concatenation of the results."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::code("bool"),
+                                        Text::plain(": "),
+                                        Text::code("true"),
+                                        Text::plain(" is translated to 1 and "),
+                                        Text::code("false"),
+                                        Text::plain(": is translated to the empty string."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::code("null"),
+                                        Text::plain(": translated to the empty string."),
+                                    ]),
+                                    ListItem::paragraph(vec![
+                                        Text::plain("For each item of "),
+                                        Text::Link{destination: String::from("#reference-inputs-outputs"), text:String::from("outputs")}, 
+                                        Text::plain(" there is an environment variable of the same name that is set to the store path for that output."),
+                                    ]),
+                                ]
+                            },
+                            Block::Paragraph(vec![Text::bold("Outputs")]),
+                            Block::Paragraph(vec![
+                                Text::plain("The builder must create a file or directory for each item in "),
+                                Text::Link{destination: String::from("#reference-inputs-outputs"), text: String::from("outputs")},
+                                Text::plain(". If "),
+                                Text::Link{destination: String::from("#reference-inputs-outputs"), text: String::from("outputs")},
+                                Text::plain(" is omitted then it will default to "),
+                                Text::code("[\"out\"]"),
+                                Text::plain("."),
+                            ]),
+                            Block::Paragraph(vec![Text::bold("Examples")]),
+                            Block::code("# builder.sh\n#! /bin/sh\necho \"hello\" > $out"),
+                            Block::code("derivation {\n  name = \"hello\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n}"),
+                            Block::paragraph("&nbsp;"),
+                            Block::code("# builder.sh\n#! /bin/sh\necho \"hello\" > $one\necho \"goodbye\" > $two"),
+                            Block::code("derivation {\nname = \"hello-goodbye\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n  outputs = [\"one\" \"two\"];\n}"),
+                        ]),
+
                     })
                 ]),
             }),
