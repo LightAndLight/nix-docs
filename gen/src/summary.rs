@@ -77,7 +77,9 @@ impl<'a> Summary<'a> {
 
     pub fn from_type(ty: &'a Type) -> Self {
         match ty {
-            Type::String | Type::Derivation | Type::Path | Type::List(_) => Summary::Simple(ty),
+            Type::String | Type::Derivation | Type::Path | Type::List(_) | Type::Union(_, _) => {
+                Summary::Simple(ty)
+            }
             Type::Function { input, output } => {
                 let input = Box::new(Self::from_type(input));
                 let output = Box::new(Self::from_type(output));

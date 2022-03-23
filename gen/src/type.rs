@@ -26,6 +26,7 @@ pub enum Type {
     Derivation,
     Path,
     List(Box<Type>),
+    Union(Box<Type>, Box<Type>),
     Function { input: Box<Type>, output: Box<Type> },
     Record { fields: Option<Vec<RecordField>> },
 }
@@ -37,6 +38,11 @@ impl Type {
                 Type::String => write!(buffer, "string"),
                 Type::Derivation => write!(buffer, "derivation"),
                 Type::Path => write!(buffer, "path"),
+                Type::Union(a, b) => {
+                    inner(a, buffer)?;
+                    write!(buffer, " | ")?;
+                    inner(b, buffer)
+                }
                 Type::Function { .. } => write!(buffer, "function"),
                 Type::Record { .. } => write!(buffer, "record"),
                 Type::List(value) => {

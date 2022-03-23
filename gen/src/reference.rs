@@ -82,7 +82,9 @@ pub enum Reference<'a> {
 impl<'a> Reference<'a> {
     pub fn from_type(ty: &'a Type) -> Option<Self> {
         match ty {
-            Type::String | Type::Derivation | Type::Path | Type::List(_) => None,
+            Type::String | Type::Derivation | Type::Path | Type::List(_) | Type::Union(_, _) => {
+                None
+            }
             Type::Function { input, output } => {
                 match (
                     Self::from_type(input).map(Box::new),
