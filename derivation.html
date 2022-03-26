@@ -27,6 +27,14 @@
 <td><a href="#reference-inputs-builder">builder</a>:</td>
 <td>path | derivation</td>
 </tr>
+<tr>
+<td><a href="#reference-inputs-args">args</a>?:</td>
+<td>list[string]</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-outputs">outputs</a>?:</td>
+<td>list[string]</td>
+</tr>
 </tbody>
 </table>
 <p style="margin-top: 0.5rem; margin-bottom: 0.5rem">}</p>
@@ -141,5 +149,39 @@ name = "hello-goodbye";
   system = builtins.currentSystem;
   builder = ./builder.sh;
   outputs = ["one" "two"];
+}</code></pre>
+<h5 id="reference-inputs-args" style="font-weight: 500;"><code>args</code></h5>
+<p><i>list[string], optional</i></p><p>
+A list of command line arguments to be passed to the builder.</p>
+<p>
+The list items can be any value that is convertible to a string. See <a href=#references-inputs-builder>builder</a> for how these values are translated.</p>
+<p>
+<b>Examples</b></p>
+<pre><code># builder.sh
+#! /bin/sh
+echo $1
+echo $2</code></pre>
+<pre><code>derivation {
+  name = "say-hello-world";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  args = ["hello" "world"];
+}</code></pre>
+<h5 id="reference-inputs-outputs" style="font-weight: 500;"><code>outputs</code></h5>
+<p><i>list[string], optional</i></p><p>
+A list of outputs from the derivation. Defaults to <code>["out"]</code>.</p>
+<p>
+The derivation will produce one store path per output.This allows the outputs to be downloaded and garbage collected separately.</p>
+<p>
+<b>Examples</b></p>
+<pre><code># builder.sh
+#! /bin/sh
+echo "hello" > $one
+echo "world" > $two</code></pre>
+<pre><code>derivation {
+  name = "write-hello-world";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  args = ["one" "two"];
 }</code></pre>
 </body>

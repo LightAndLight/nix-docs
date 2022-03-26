@@ -123,7 +123,42 @@ pub fn docs() -> Documentation {
                             Block::code("derivation {\nname = \"hello-goodbye\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n  outputs = [\"one\" \"two\"];\n}"),
                         ]),
 
-                    })
+                    }),
+                    RecordField::Item(RecordFieldItem {
+                        name: String::from("args"),
+                        optional: true,
+                        r#type: Type::List(Box::new(Type::String)),
+                        docs: Markup(vec![
+                            Block::paragraph("A list of command line arguments to be passed to the builder."),
+                            Block::Paragraph(vec![
+                                Text::plain("The list items can be any value that is convertible to a string. See "),
+                                Text::Link{destination: String::from("#references-inputs-builder"), text: String::from("builder")},
+                                Text::plain(" for how these values are translated.")
+                            ]),
+                            Block::Paragraph(vec![Text::bold("Examples")]),
+                            Block::code("# builder.sh\n#! /bin/sh\necho $1\necho $2"),
+                            Block::code("derivation {\n  name = \"say-hello-world\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n  args = [\"hello\" \"world\"];\n}"),
+                        ]),
+                    }),
+                    RecordField::Item(RecordFieldItem {
+                        name: String::from("outputs"),
+                        optional: true,
+                        r#type: Type::List(Box::new(Type::String)),
+                        docs: Markup(vec![
+                            Block::Paragraph(vec![
+                                Text::plain("A list of outputs from the derivation. Defaults to "),
+                                Text::code("[\"out\"]"),
+                                Text::plain(".")
+                            ]),
+                            Block::Paragraph(vec![
+                                Text::plain("The derivation will produce one store path per output."),
+                                Text::plain("This allows the outputs to be downloaded and garbage collected separately."),
+                            ]),
+                            Block::Paragraph(vec![Text::bold("Examples")]),
+                            Block::code("# builder.sh\n#! /bin/sh\necho \"hello\" > $one\necho \"world\" > $two"),
+                            Block::code("derivation {\n  name = \"write-hello-world\";\n  system = builtins.currentSystem;\n  builder = ./builder.sh;\n  args = [\"one\" \"two\"];\n}"),
+                        ]),
+                    }),
                 ]),
             }),
             output: Box::new(Type::Derivation),
