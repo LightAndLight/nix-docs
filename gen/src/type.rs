@@ -21,6 +21,18 @@ pub enum RecordField {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct RecordRest {
+    pub name: String,
+    pub docs: Markup,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RecordFields {
+    pub fields: Vec<RecordField>,
+    pub rest: Option<RecordRest>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Type {
     String,
     Derivation,
@@ -28,7 +40,7 @@ pub enum Type {
     List(Box<Type>),
     Union(Box<Type>, Box<Type>),
     Function { input: Box<Type>, output: Box<Type> },
-    Record { fields: Option<Vec<RecordField>> },
+    Record { fields: Option<RecordFields> },
 }
 
 impl Type {

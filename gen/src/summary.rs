@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-use crate::r#type::{RecordField, RecordFieldItem, Type};
+use crate::r#type::{RecordField, RecordFieldItem, RecordFields, Type};
 
 pub enum RecordFieldSummary<'a> {
     Item {
@@ -63,6 +63,7 @@ pub enum Summary<'a> {
     },
     Record {
         fields: Vec<RecordFieldSummary<'a>>,
+        rest: Option<&'a str>,
     },
     Simple(&'a Type),
 }
@@ -95,7 +96,7 @@ impl<'a> Summary<'a> {
                 }
 
                 match fields {
-                    Some(fields) if !fields.is_empty() => Summary::Record {
+                    Some(RecordFields { fields, rest }) if !fields.is_empty() => Summary::Record {
                         fields: fields
                             .iter()
                             .map(|field| match field {
@@ -108,6 +109,7 @@ impl<'a> Summary<'a> {
                                 }
                             })
                             .collect(),
+                        rest: rest.as_ref().map(|rest| rest.name.as_str()),
                     },
                     _ => Summary::Simple(ty),
                 }
@@ -141,7 +143,7 @@ impl<'a> Summary<'a> {
 
                     Ok(())
                 }
-                Summary::Record { fields } => {
+                Summary::Record { fields, rest } => {
                     writeln!(buffer, "<div class=\"code\">")?;
                     write!(buffer, "<code>")?;
                     writeln!(
@@ -172,6 +174,22 @@ impl<'a> Summary<'a> {
 
                         let buffer = &mut *buffer;
                         field.write_html(buffer)
+                    })?;
+
+                    rest.iter().try_for_each(|rest| {
+                        match previous_field {
+                            Some(RecordFieldType::Section) => {
+                                writeln!(buffer, "<tr><td>&nbsp;</td></tr>")
+                            }
+                            _ => Ok(()),
+                        }?;
+
+                        writeln!(
+                            buffer,
+                            "<tr><td><a href=\"#reference-inputs-{}\">{}</a>...</td></tr>",
+                            urlencoding::encode(rest),
+                            rest,
+                        )
                     })?;
 
                     writeln!(buffer, "</tbody>")?;

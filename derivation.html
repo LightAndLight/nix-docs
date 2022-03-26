@@ -35,6 +35,7 @@
 <td><a href="#reference-inputs-outputs">outputs</a>?:</td>
 <td>list[string]</td>
 </tr>
+<tr><td><a href="#reference-inputs-user-defined%20attributes">user-defined attributes</a>...</td></tr>
 </tbody>
 </table>
 <p style="margin-top: 0.5rem; margin-bottom: 0.5rem">}</p>
@@ -156,7 +157,7 @@ A list of command line arguments to be passed to the builder.</p>
 <p>
 The list items can be any value that is convertible to a string. See <a href=#references-inputs-builder>builder</a> for how these values are translated.</p>
 <p>
-<b>Examples</b></p>
+<b>Example</b></p>
 <pre><code># builder.sh
 #! /bin/sh
 echo $1
@@ -173,7 +174,7 @@ A list of outputs from the derivation. Defaults to <code>["out"]</code>.</p>
 <p>
 The derivation will produce one store path per output.This allows the outputs to be downloaded and garbage collected separately.</p>
 <p>
-<b>Examples</b></p>
+<b>Example</b></p>
 <pre><code># builder.sh
 #! /bin/sh
 echo "hello" > $one
@@ -183,5 +184,25 @@ echo "world" > $two</code></pre>
   system = builtins.currentSystem;
   builder = ./builder.sh;
   args = ["one" "two"];
+}</code></pre>
+<h5 id="reference-inputs-user-defined%20attributes" style="font-weight: 500;"><code>user-defined attributes</code></h5>
+<p>
+The user may define any number of additional attributes.</p>
+<p>
+Each user-defined attribute is converted to a string and made available to the builder through an environment variable. See <a href=#reference-inputs-builder>builder</a> for how these values are translated.</p>
+<p>
+<b>Example</b></p>
+<pre><code># builder.sh
+#! /bin/sh
+echo "$result" > $out
+echo "$count"
+echo "$word"</code></pre>
+<pre><code>derivation {
+  name = "42-pelican";
+  system = builtins.currentSystem;
+  builder = ./builder.sh;
+  result = [ "one" "two" 3 ];
+  count = 42;
+  word = "pelican";
 }</code></pre>
 </body>

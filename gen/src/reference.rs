@@ -2,7 +2,7 @@ use std::io::{self, Write};
 
 use crate::{
     markup::Markup,
-    r#type::{RecordField, RecordFieldItem, Type},
+    r#type::{RecordField, RecordFieldItem, RecordFields, Type},
 };
 
 pub enum RecordFieldReference<'a> {
@@ -69,6 +69,11 @@ impl<'a> RecordFieldReference<'a> {
     }
 }
 
+pub struct RecordRest<'a> {
+    pub name: &'a str,
+    pub docs: &'a Markup
+}
+
 pub enum Reference<'a> {
     Function {
         input: Option<Box<Reference<'a>>>,
@@ -76,6 +81,7 @@ pub enum Reference<'a> {
     },
     Record {
         fields: Vec<RecordFieldReference<'a>>,
+        rest: Option<RecordRest<'a>>,
     },
 }
 
@@ -94,7 +100,7 @@ impl<'a> Reference<'a> {
                     (input, output) => Some(Reference::Function { input, output }),
                 }
             }
-            Type::Record { fields } => fields.as_ref().and_then(|fields| {
+            Type::Record { fields } => fields.as_ref().and_then(|RecordFields { fields, rest }| {
                 fn from_record_field_item(field: &RecordFieldItem) -> RecordFieldReference {
                     RecordFieldReference::Item {
                         name: &field.name,
@@ -120,6 +126,7 @@ impl<'a> Reference<'a> {
                                 }
                             })
                             .collect(),
+                        rest: rest.as_ref().map(|rest| RecordRest{name: rest.name.as_str(), docs: &rest.docs}),
                     })
                 }
             }),
@@ -142,10 +149,23 @@ impl<'a> Reference<'a> {
 
                     Ok(())
                 }
-                Reference::Record { fields } => fields.iter().try_for_each(|field| {
-                    let buffer = &mut *buffer;
-                    field.write_html(buffer)
-                }),
+                Reference::Record { fields, rest } => {
+                    fields.iter().try_for_each(|field| {
+                        let buffer = &mut *buffer;
+                        field.write_html(buffer)
+                    })?;
+
+                    rest.iter().try_for_each(|rest| {
+                        writeln!(
+                            buffer,
+                            "<h5 id=\"reference-inputs-{}\" style=\"font-weight: 500;\"><code>{}</code></h5>",
+                            urlencoding::encode(rest.name), 
+                            rest.name,
+                        )?;
+                        rest.docs.write_html(buffer)?;
+                        Ok(())
+                    })
+                }
             }
         }
 
