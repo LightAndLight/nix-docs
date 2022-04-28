@@ -48,23 +48,6 @@ impl Documentation {
 
     pub fn write_html<W: Write>(&self, mut buffer: W) -> Result<()> {
         fn inner(value: &Documentation, buffer: &mut dyn Write) -> Result<()> {
-            writeln!(buffer, "<!doctype html>")?;
-            writeln!(buffer, "<head>")?;
-            writeln!(buffer, "<meta charset=\"UTF-8\">")?;
-            writeln!(buffer, "<title>{}</title>", value.title)?;
-            writeln!(buffer, "<link rel=\"stylesheet\" href=\"style.css\">")?;
-            writeln!(
-                buffer,
-                "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">"
-            )?;
-            writeln!(
-                buffer,
-                "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>"
-            )?;
-            writeln!(buffer, "<link href=\"https://fonts.googleapis.com/css2?family=Overpass:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap\" rel=\"stylesheet\">")?;
-            writeln!(buffer, "</head>")?;
-
-            writeln!(buffer, "<body>")?;
             writeln!(buffer, "<h1>{}</h1>", value.title)?;
 
             write!(buffer, "<p><i>")?;
@@ -88,16 +71,8 @@ impl Documentation {
                     reference.write_html(buffer)
                 })?;
 
-            writeln!(buffer, "</body>")?;
             Ok(())
         }
         inner(self, &mut buffer)
-    }
-
-    pub fn write_syntax<W: Write>(&self, buffer: &mut W) -> Result<()> {
-        fn inner(value: &Documentation, buffer: &mut dyn Write) -> Result<()> {
-            todo!()
-        }
-        inner(self, buffer)
     }
 }
