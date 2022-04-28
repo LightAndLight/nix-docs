@@ -3,9 +3,19 @@ mod mk_derivation;
 
 use nix_docs_gen::Documentation;
 use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::io::{self, BufWriter, Write};
 
-fn write_document<W: Write>(document: Documentation, mut buffer: W) -> nix_docs_gen::Result<()> {
+fn write_survey(buffer: &mut dyn Write) -> io::Result<()> {
+    write!(buffer, "<p>")?;
+    write!(buffer, "If you want to see more Nix documentation like this in the future, or have any requests or suggestions, then please fill out ")?;
+    write!(buffer, r#"<a href="https://forms.gle/pHsadGb3mtSeCpuD9">"#)?;
+    write!(buffer, "this anonymous Google form")?;
+    write!(buffer, "</a>")?;
+    write!(buffer, ".")?;
+    writeln!(buffer, "</p>")
+}
+
+fn write_document(document: Documentation, buffer: &mut dyn Write) -> nix_docs_gen::Result<()> {
     writeln!(buffer, "<!doctype html>")?;
     writeln!(buffer, "<head>")?;
     writeln!(buffer, "<meta charset=\"UTF-8\">")?;
@@ -23,7 +33,8 @@ fn write_document<W: Write>(document: Documentation, mut buffer: W) -> nix_docs_
     writeln!(buffer, "</head>")?;
 
     writeln!(buffer, "<body>")?;
-    document.write_html(&mut buffer)?;
+    write_survey(buffer)?;
+    document.write_html(buffer)?;
     writeln!(buffer, "</body>")?;
 
     writeln!(buffer, "</html>")?;
