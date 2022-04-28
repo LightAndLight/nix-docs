@@ -40,6 +40,11 @@ a {
   color: #405D99;
 }
 
+li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 pre {
   background: #f2f8fd;
   color: #000000;

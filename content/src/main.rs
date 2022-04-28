@@ -6,7 +6,10 @@ use std::fs::File;
 use std::io::{self, BufWriter, Write};
 
 fn write_survey(buffer: &mut dyn Write) -> io::Result<()> {
-    write!(buffer, "<p>")?;
+    write!(
+        buffer,
+        r#"<p style="border-bottom: 1px solid lightgray; padding-bottom: 1.5em; text-align: center;">"#
+    )?;
     write!(buffer, "If you want to see more Nix documentation like this in the future, or have any requests or suggestions, then please fill out ")?;
     write!(buffer, r#"<a href="https://forms.gle/pHsadGb3mtSeCpuD9">"#)?;
     write!(buffer, "this anonymous Google form")?;
@@ -34,6 +37,11 @@ fn write_document(document: Documentation, buffer: &mut dyn Write) -> io::Result
 
     writeln!(buffer, "<body>")?;
     write_survey(buffer)?;
+    writeln!(
+        buffer,
+        r#"<div style="display: flex; align-items: center;"><a href="index.html">nix-docs</a><span style="font-size: 1.2em; color: lightgray; font-weight: bold; padding-left: 0.5em; padding-right: 0.5em;">/</span>{}</div>"#,
+        document.title
+    )?;
     document.write_html(buffer)?;
     writeln!(buffer, "</body>")?;
 
@@ -44,7 +52,7 @@ fn write_document(document: Documentation, buffer: &mut dyn Write) -> io::Result
 
 fn main() -> io::Result<()> {
     {
-        let file = File::create("stdenv-mkDerivation.html")?;
+        let file = File::create("mkDerivation.html")?;
         let mut file = BufWriter::new(file);
 
         write_document(mk_derivation::docs(), &mut file)
