@@ -29,7 +29,7 @@ fn write_document(document: Documentation, buffer: &mut dyn Write) -> io::Result
     writeln!(buffer, "<!doctype html>")?;
     writeln!(buffer, "<head>")?;
     writeln!(buffer, "<meta charset=\"UTF-8\">")?;
-    writeln!(buffer, "<title>{}</title>", document.title)?;
+    writeln!(buffer, "<title>{} - nix-docs</title>", document.title)?;
     writeln!(buffer, "<link rel=\"stylesheet\" href=\"style.css\">")?;
     writeln!(
         buffer,
