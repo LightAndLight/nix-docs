@@ -32,47 +32,41 @@ pub struct Documentation {
 }
 
 impl Documentation {
-    pub fn read_cbor<R: Read>(mut buffer: R) -> Result<Self> {
+    pub fn read_cbor(mut buffer: &mut dyn Read) -> Result<Self> {
         fn inner(buffer: &mut dyn Read) -> Result<Documentation> {
             ciborium::de::from_reader(buffer).map_err(Error::ReadCborError)
         }
         inner(&mut buffer)
     }
 
-    pub fn write_cbor<W: Write>(&self, buffer: &mut W) -> Result<()> {
-        fn inner(value: &Documentation, buffer: &mut dyn Write) -> Result<()> {
-            ciborium::ser::into_writer(value, buffer).map_err(Error::WriteCborError)
-        }
-        inner(self, buffer)
+    pub fn write_cbor(&self, buffer: &mut dyn Write) -> Result<()> {
+        ciborium::ser::into_writer(self, buffer).map_err(Error::WriteCborError)
     }
 
-    pub fn write_html<W: Write>(&self, mut buffer: W) -> Result<()> {
-        fn inner(value: &Documentation, buffer: &mut dyn Write) -> Result<()> {
-            writeln!(buffer, "<h1>{}</h1>", value.title)?;
+    pub fn write_html(&self, buffer: &mut dyn Write) -> Result<()> {
+        writeln!(buffer, "<h1>{}</h1>", self.title)?;
 
-            write!(buffer, "<p><i>")?;
-            {
+        write!(buffer, "<p><i>")?;
+        {
+            let buffer = &mut *buffer;
+            self.r#type.write_name(buffer)
+        }?;
+        write!(buffer, "</i></p>")?;
+
+        writeln!(buffer, "<p>{}</p>", self.intro)?;
+        {
+            let buffer = &mut *buffer;
+            Summary::from_type(&self.r#type).write_html(buffer)
+        }?;
+
+        writeln!(buffer, "<h2>Reference</h2>")?;
+        Reference::from_type(&self.r#type)
+            .iter()
+            .try_for_each(|reference| {
                 let buffer = &mut *buffer;
-                value.r#type.write_name(buffer)
-            }?;
-            write!(buffer, "</i></p>")?;
+                reference.write_html(buffer)
+            })?;
 
-            writeln!(buffer, "<p>{}</p>", value.intro)?;
-            {
-                let buffer = &mut *buffer;
-                Summary::from_type(&value.r#type).write_html(buffer)
-            }?;
-
-            writeln!(buffer, "<h2>Reference</h2>")?;
-            Reference::from_type(&value.r#type)
-                .iter()
-                .try_for_each(|reference| {
-                    let buffer = &mut *buffer;
-                    reference.write_html(buffer)
-                })?;
-
-            Ok(())
-        }
-        inner(self, &mut buffer)
+        Ok(())
     }
 }
