@@ -10,9 +10,16 @@ fn write_survey(buffer: &mut dyn Write) -> io::Result<()> {
         buffer,
         r#"<p style="border-bottom: 1px solid lightgray; padding-bottom: 1.5em; text-align: center;">"#
     )?;
-    write!(buffer, "If you want to see more Nix documentation like this in the future, or have any requests or suggestions, then please fill out ")?;
+    write!(buffer, "Want to see more Nix documentation like this in the future, or have requests/suggestions? Fill out ")?;
     write!(buffer, r#"<a href="https://forms.gle/pHsadGb3mtSeCpuD9">"#)?;
     write!(buffer, "this anonymous Google form")?;
+    write!(buffer, "</a>")?;
+    write!(buffer, " or submit an issue on ")?;
+    write!(
+        buffer,
+        r#"<a href="https://github.com/LightAndLight/nix-docs">"#
+    )?;
+    write!(buffer, "GitHub")?;
     write!(buffer, "</a>")?;
     write!(buffer, ".")?;
     writeln!(buffer, "</p>")
