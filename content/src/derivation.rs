@@ -133,7 +133,7 @@ pub fn docs() -> Documentation {
                                 Block::paragraph("A list of command line arguments to be passed to the builder."),
                                 Block::Paragraph(vec![
                                     Text::plain("The list items can be any value that is convertible to a string. See "),
-                                    Text::Link{destination: String::from("#references-inputs-builder"), text: String::from("builder")},
+                                    Text::Link{destination: String::from("#reference-inputs-builder"), text: String::from("builder")},
                                     Text::plain(" for how these values are translated.")
                                 ]),
                                 Block::Paragraph(vec![Text::bold("Example")]),
