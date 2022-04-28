@@ -1,8 +1,6 @@
 use std::io::{self, Write};
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default)]
 pub struct Markup(pub Vec<Block>);
 
 impl Markup {
@@ -17,7 +15,7 @@ impl Markup {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Text {
     Plain(String),
     Code(String),
@@ -63,13 +61,13 @@ impl Text {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum ListOrdering {
     Ordered,
     Unordered,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct ListItem(pub Vec<Block>);
 
 impl ListItem {
@@ -91,7 +89,7 @@ impl ListItem {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Block {
     Paragraph(Vec<Text>),
     Code(String),

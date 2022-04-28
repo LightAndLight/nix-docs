@@ -1,9 +1,8 @@
-use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
 use crate::markup::Markup;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct RecordFieldItem {
     pub name: String,
     pub optional: bool,
@@ -11,7 +10,7 @@ pub struct RecordFieldItem {
     pub docs: Markup,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum RecordField {
     Item(RecordFieldItem),
     Section {
@@ -20,19 +19,19 @@ pub enum RecordField {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct RecordRest {
     pub name: String,
     pub docs: Markup,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct RecordFields {
     pub fields: Vec<RecordField>,
     pub rest: Option<RecordRest>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Type {
     String,
     Derivation,

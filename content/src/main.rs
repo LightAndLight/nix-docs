@@ -15,7 +15,7 @@ fn write_survey(buffer: &mut dyn Write) -> io::Result<()> {
     writeln!(buffer, "</p>")
 }
 
-fn write_document(document: Documentation, buffer: &mut dyn Write) -> nix_docs_gen::Result<()> {
+fn write_document(document: Documentation, buffer: &mut dyn Write) -> io::Result<()> {
     writeln!(buffer, "<!doctype html>")?;
     writeln!(buffer, "<head>")?;
     writeln!(buffer, "<meta charset=\"UTF-8\">")?;
@@ -42,17 +42,16 @@ fn write_document(document: Documentation, buffer: &mut dyn Write) -> nix_docs_g
     Ok(())
 }
 
-fn main() -> nix_docs_gen::Result<()> {
+fn main() -> io::Result<()> {
     {
-        let file =
-            File::create("stdenv-mkDerivation.html").map_err(nix_docs_gen::Error::IoError)?;
+        let file = File::create("stdenv-mkDerivation.html")?;
         let mut file = BufWriter::new(file);
 
         write_document(mk_derivation::docs(), &mut file)
     }?;
 
     {
-        let file = File::create("derivation.html").map_err(nix_docs_gen::Error::IoError)?;
+        let file = File::create("derivation.html")?;
         let mut file = BufWriter::new(file);
 
         write_document(derivation::docs(), &mut file)
