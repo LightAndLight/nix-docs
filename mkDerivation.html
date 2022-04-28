@@ -1,0 +1,203 @@
+<!doctype html>
+<head>
+<meta charset="UTF-8">
+<title>mkDerivation - nix-docs</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<p style="border-bottom: 1px solid lightgray; padding-bottom: 1.5em; text-align: center;">Want to see more Nix documentation like this in the future, or have requests/suggestions? Fill out <a href="https://forms.gle/pHsadGb3mtSeCpuD9">this anonymous Google form</a> or submit an issue on <a href="https://github.com/LightAndLight/nix-docs">GitHub</a>.</p>
+<div style="display: flex; align-items: center;"><a href="index.html">nix-docs</a><span style="font-size: 1.2em; color: lightgray; font-weight: bold; padding-left: 0.5em; padding-right: 0.5em;">/</span>mkDerivation</div>
+<h1>mkDerivation</h1>
+<p><i>function</i></p><p>mkDerivation is the main function used to build packages with the standard environment.</p>
+<h2>Inputs</h2>
+<div class="code">
+<code><p style="margin-top: 0.5rem; margin-bottom: 0.5rem;">{</p>
+<table style="padding-left: 1rem;">
+<tbody>
+<tr><td>
+  <span class="comment"># Core Attributes</span>
+</td></tr>
+<tr>
+<td><a href="#reference-inputs-name">name</a>:</td>
+<td>string</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-pname">pname</a>?:</td>
+<td>string</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-version">version</a>?:</td>
+<td>string</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-src">src</a>:</td>
+<td>path</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>
+  <span class="comment"># Building</span>
+</td></tr>
+<tr>
+<td><a href="#reference-inputs-buildInputs">buildInputs</a>?:</td>
+<td>list[derivation]</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-buildPhase">buildPhase</a>?:</td>
+<td>string</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-installPhase">installPhase</a>?:</td>
+<td>string</td>
+</tr>
+<tr>
+<td><a href="#reference-inputs-builder">builder</a>?:</td>
+<td>path</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td>
+  <span class="comment"># Nix shell</span>
+</td></tr>
+<tr>
+<td><a href="#reference-inputs-shellHook">shellHook</a>?:</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+<p style="margin-top: 0.5rem; margin-bottom: 0.5rem">}</p>
+</code>
+</div>
+<h2>Output</h2>
+<i><p>derivation</i></p>
+<h2>Reference</h2>
+<h3>Inputs</h3>
+<h4>Core Attributes</h4>
+<h5 id="reference-inputs-name" style="font-weight: 500;"><code>name</code></h5>
+<p><i>string, required</i></p><p>
+The derivation name.</p>
+<p>
+Can be omitted if <a href=#reference-inputs-pname>pname</a> and <a href=#reference-inputs-version>version</a> are set, in which case it is automatically set to <code>${pname}-${version}</code>.</p>
+<p>
+<b>Examples</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = ./src;
+}
+</code></pre>
+<pre><code>stdenv.mkDerivation {
+  pname = "libfoo";
+  version = "1.2.3";
+  src = ./src;
+}</code></pre>
+<h5 id="reference-inputs-pname" style="font-weight: 500;"><code>pname</code></h5>
+<p><i>string, optional</i></p><p>
+The package name.</p>
+<h5 id="reference-inputs-version" style="font-weight: 500;"><code>version</code></h5>
+<p><i>string, optional</i></p><p>
+The package version.</p>
+<h5 id="reference-inputs-src" style="font-weight: 500;"><code>src</code></h5>
+<p><i>path, required</i></p><p>
+The package source directory.</p>
+<p>
+<b>Examples</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = ./src;
+}</code></pre>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo-1.2.3";
+  src = fetchurl {
+    url = http://example.org/libfoo-1.2.3.tar.bz2;
+    sha256 = "0x2g1jqygyr5wiwg4ma1nd7w4ydpy82z9gkcv8vh2v8dn3y58v5m";
+  };
+}</code></pre>
+<h4>Building</h4>
+<h5 id="reference-inputs-buildInputs" style="font-weight: 500;"><code>buildInputs</code></h5>
+<p><i>list[derivation], optional</i></p><p>
+The package's build-time dependencies.</p>
+<p>
+This attribute ensures that the outputs of the dependencies (e.g. <code>bin</code>, <code>includes</code>) are in scope during the package build.</p>
+<p>
+<b>Example</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildInputs = [libbar perl ncurses];
+}</code></pre>
+<h5 id="reference-inputs-buildPhase" style="font-weight: 500;"><code>buildPhase</code></h5>
+<p><i>string, optional</i></p><p>
+A shell script to run during the build phase.</p>
+<p>
+If omitted, the build phase will run <code>make</code>.</p>
+<p>
+<b>Example</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildPhase = ''
+    gcc foo.c -o foo
+  '';
+}</code></pre>
+<h5 id="reference-inputs-installPhase" style="font-weight: 500;"><code>installPhase</code></h5>
+<p><i>string, optional</i></p><p>
+A shell script to run during the install phase.</p>
+<p>
+If omitted, the install phase will run <code>make install</code>.</p>
+<p>
+<b>Example</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  buildPhase = ''
+    gcc foo.c -o foo
+  '';
+  installPhase = ''
+    mkdir -p $out/bin
+    cp foo $out/bin
+  '';
+}</code></pre>
+<h5 id="reference-inputs-builder" style="font-weight: 500;"><code>builder</code></h5>
+<p><i>path, optional</i></p><p>
+A path to a shell script that describes how to build the package.</p>
+<p>
+If omitted, the build runs using stdenv's generic builder.</p>
+<p>
+<b>Example</b></p>
+<pre><code># builder.sh
+source $stdenv/setup
+
+buildPhase() {
+  echo "... this is my custom build phase ..."
+  gcc foo.c -o foo
+}
+
+installPhase() {
+  mkdir -p $out/bin
+  cp foo $out/bin
+}
+
+genericBuild</code></pre>
+<pre><code>stdenv.mkDerivation {
+  name = "libfoo";
+  src = ./src;
+  builder = ./builder.sh;
+}</code></pre>
+<h4>Nix shell</h4>
+<h5 id="reference-inputs-shellHook" style="font-weight: 500;"><code>shellHook</code></h5>
+<p><i>string, optional</i></p><p>
+A script to run after entering a Nix shell.</p>
+<p>
+If <code>shellHook</code> is defined, it will be run in the <code>nix-shell</code> after <code>$stdenv/setup</code> has been sourced by the package's <a href=#reference-inputs-builder>builder</a>.</p>
+<p>
+<b>Example</b></p>
+<pre><code>stdenv.mkDerivation {
+  name = "my-package";
+  src = ./src;
+  shellHook = ''
+    echo "Hello shell!"
+  '';
+}</code></pre>
+</body>
+</html>
