@@ -1,2 +1,3 @@
+https://blog.ielliott.io/nix-docs/index.html
 https://blog.ielliott.io/nix-docs/mkDerivation.html
 https://blog.ielliott.io/nix-docs/derivation.html
